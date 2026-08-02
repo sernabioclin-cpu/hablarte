@@ -59,14 +59,31 @@
   applySize();
 
   var committed="", session="", editing=false;
+
   function cap(t){return t.replace(/(^|[.!?¿¡]\s+)([a-záéíóúñ])/g,function(m,a,b){return a+b.toUpperCase();});}
+  // Colapsa palabras idénticas seguidas: "porcentaje porcentaje porcentaje" -> "porcentaje"
+  function collapse(t){
+    var w=t.replace(/\s+/g,' ').trim().split(' '),out=[];
+    for(var i=0;i<w.length;i++){ if(out.length===0 || out[out.length-1].toLowerCase()!==w[i].toLowerCase()) out.push(w[i]); }
+    return out.join(' ');
+  }
   function scrollDown(){var st=document.getElementById('stage');st.scrollTop=st.scrollHeight;}
   function render(){
-    if(committed.trim()==="" && session.trim()===""){msg.classList.add('placeholder');msg.innerHTML="";return;}
+    var live=collapse(session);
+    if(committed.trim()==="" && live===""){msg.classList.add('placeholder');msg.innerHTML="";return;}
     msg.classList.remove('placeholder');
     msg.textContent=committed;
-    if(session){var sp=document.createElement('span');sp.className='interim';sp.textContent=(committed&&!/\s$/.test(committed)?" ":"")+session;msg.appendChild(sp);}
+    if(live){var sp=document.createElement('span');sp.className='interim';sp.textContent=(committed&&!/\s$/.test(committed)?" ":"")+live;msg.appendChild(sp);}
     scrollDown();
+  }
+  // Guarda el trozo de la sesión, evitando repetir lo que ya está al final
+  function foldSession(){
+    var sTxt=collapse(session);session="";
+    if(!sTxt)return;
+    var cl=committed.replace(/\s+/g,' ').trim().toLowerCase();
+    var sl=sTxt.toLowerCase();
+    if(cl && cl.slice(-sl.length)===sl) return;   // ya estaba al final -> no repetir
+    committed=collapse(cap((committed?committed+" ":"")+sTxt));
   }
 
   document.getElementById('clear').onclick=function(){committed="";session="";render();if(editing)msg.focus();};
@@ -96,20 +113,22 @@
 
   if(!SR){micBtn.disabled=true;micBtn.style.opacity=.5;micLabel.textContent="Sin voz";flash("Este navegador no soporta dictado. Usa Chrome y el teclado ⌨️.");}
   else{
-    rec=new SR();rec.lang='es-MX';rec.continuous=true;rec.interimResults=true;
-    // Se reconstruye TODO el texto de la sesión en cada evento (sin volver a pegar => sin repeticiones en Android)
+    rec=new SR();rec.lang='es-MX';
+    rec.continuous=false;          // clave: sin modo continuo, Android no reprocesa el audio
+    rec.interimResults=true;
+    rec.maxAlternatives=1;
     rec.onresult=function(ev){
       var s="";
-      for(var i=0;i<ev.results.length;i++){ s += ev.results[i][0].transcript; if(ev.results[i].isFinal) s+=" "; }
+      for(var i=0;i<ev.results.length;i++){ s += ev.results[i][0].transcript + " "; }
       session=s;render();
     };
     rec.onerror=function(ev){if(ev.error==='not-allowed'||ev.error==='service-not-allowed'){wantListen=false;setMic(false);flash("Permite el micrófono en el navegador para poder dictar.");}};
     rec.onend=function(){
       listening=false;
-      if(session.trim()){committed=cap((committed?committed+" ":"")+session.trim());session="";}
-      if(wantListen){try{rec.start();listening=true;}catch(e){}}
-      else setMic(false);
+      foldSession();
       render();
+      if(wantListen){ setTimeout(function(){ if(wantListen){ try{rec.start();listening=true;}catch(e){} } },150); }
+      else setMic(false);
     };
   }
   function setMic(on){if(on){micBtn.classList.add('on');micLabel.textContent="Escuchando…";}else{micBtn.classList.remove('on');micLabel.textContent="Hablar";}}
