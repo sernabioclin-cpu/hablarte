@@ -7,53 +7,110 @@
 <title>Hablarte</title>
 <style>
   :root{
-    --bg:#17130f;--panel:#211a14;--ink:#faf3e7;--dim:#8a7d6c;
-    --me:#e0a24b;--me-soft:#2a2114;--me-line:#e0a24b;
-    --her:#7fb8a4;--her-soft:#1c2723;--her-line:#7fb8a4;
+    --bg:#17130f;
+    --panel:#211a14;
+    --ink:#faf3e7;
+    --dim:#8a7d6c;
+    --accent:#e0a24b;
+    --accent-soft:#3a2c19;
     --danger:#c56b52;
-    --fs:7.5vw;--line:1.22;
+    --fs:8vw;
+    --line:1.25;
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0}
   html,body{height:100%}
-  body{background:var(--bg);color:var(--ink);
+  body{
+    background:var(--bg);
+    color:var(--ink);
     font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,system-ui,sans-serif;
-    display:flex;flex-direction:column;overflow:hidden;height:100dvh;-webkit-user-select:none;user-select:none}
+    display:flex;flex-direction:column;
+    overflow:hidden;
+    height:100dvh;
+    -webkit-user-select:none;user-select:none;
+  }
 
-  /* Quién habla */
-  #who{display:flex;gap:8px;padding:10px 14px 6px}
-  .spk{flex:1;background:var(--panel);color:var(--dim);border:2px solid #2c2117;border-radius:16px;
-    padding:13px 8px;font-size:18px;font-weight:800;text-align:center}
-  .spk.me.on{color:#20160a;background:var(--me);border-color:var(--me)}
-  .spk.her.on{color:#0f1a16;background:var(--her);border-color:var(--her)}
+  #stage{
+    flex:1;
+    display:flex;
+    padding:24px 22px 8px;
+    overflow-y:auto;
+    -webkit-overflow-scrolling:touch;
+  }
+  #message{
+    width:100%;
+    align-self:center;
+    font-size:var(--fs);
+    line-height:var(--line);
+    font-weight:600;
+    letter-spacing:.005em;
+    word-break:break-word;
+    color:var(--ink);
+    background:transparent;
+    border:none;
+    outline:none;
+    resize:none;
+    overflow:visible;
+    caret-color:var(--accent);
+  }
+  #message:empty::before,
+  #message.placeholder::before{
+    content:"Toca el micrófono y háblale a tu mamá…";
+    color:var(--dim);
+    font-weight:500;
+    font-size:5.5vw;
+  }
+  .interim{color:var(--accent);font-weight:600}
 
-  /* Conversación */
-  #stage{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:8px 14px 8px}
-  #stage.empty{display:flex;align-items:center;justify-content:center}
-  #ph{color:var(--dim);font-size:5.2vw;font-weight:500;text-align:center;padding:0 10px}
-  .msg{margin:10px 0;padding:12px 16px 14px;border-radius:16px;border-left:8px solid}
-  .msg.me{background:var(--me-soft);border-left-color:var(--me-line)}
-  .msg.her{background:var(--her-soft);border-left-color:var(--her-line)}
-  .tag{font-size:13px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;margin-bottom:4px}
-  .msg.me .tag{color:var(--me)}
-  .msg.her .tag{color:var(--her)}
-  .txt{font-size:var(--fs);line-height:var(--line);font-weight:600;word-break:break-word;white-space:pre-wrap;outline:none}
-  .interim{color:var(--me);font-weight:600}
-  .msg.her .interim{color:var(--her)}
+  #phrases{
+    display:flex;gap:8px;
+    padding:6px 14px 10px;
+    overflow-x:auto;
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:none;
+  }
+  #phrases::-webkit-scrollbar{display:none}
+  .chip{
+    flex:0 0 auto;
+    background:var(--panel);
+    color:var(--ink);
+    border:1px solid #33281c;
+    border-radius:999px;
+    padding:11px 16px;
+    font-size:16px;
+    font-weight:600;
+    white-space:nowrap;
+  }
+  .chip:active{background:var(--accent-soft);border-color:var(--accent)}
 
-  /* Frases rápidas */
-  #row{display:flex;gap:8px;padding:4px 14px 10px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
-  #row::-webkit-scrollbar{display:none}
-  .chip{flex:0 0 auto;background:var(--panel);color:var(--ink);border:1px solid #33281c;border-radius:999px;
-    padding:11px 16px;font-size:16px;font-weight:600;white-space:nowrap}
-  .chip:active{background:var(--me-soft);border-color:var(--me)}
-
-  /* Barra */
-  #bar{display:flex;align-items:center;gap:10px;padding:12px 16px calc(14px + env(safe-area-inset-bottom));background:var(--panel);border-top:1px solid #2c2117}
-  .btn{background:#2c2117;color:var(--ink);border:none;border-radius:16px;height:60px;min-width:58px;font-size:22px;font-weight:700;display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+  #bar{
+    display:flex;align-items:center;gap:10px;
+    padding:12px 16px calc(14px + env(safe-area-inset-bottom));
+    background:var(--panel);
+    border-top:1px solid #2c2117;
+  }
+  .btn{
+    background:#2c2117;
+    color:var(--ink);
+    border:none;
+    border-radius:16px;
+    height:58px;
+    min-width:58px;
+    font-size:22px;
+    font-weight:700;
+    display:flex;align-items:center;justify-content:center;
+    flex:0 0 auto;
+  }
   .btn:active{transform:scale(.95)}
   .btn.small{font-size:26px}
-  #mic{flex:1;height:66px;background:var(--me);color:#20160a;font-size:20px;gap:10px;border-radius:20px}
-  #mic.her{background:var(--her);color:#0f1a16}
+  #mic{
+    flex:1;
+    height:66px;
+    background:var(--accent);
+    color:#20160a;
+    font-size:20px;
+    gap:10px;
+    border-radius:20px;
+  }
   #mic .dot{width:14px;height:14px;border-radius:50%;background:#20160a;opacity:.35}
   #mic.on{background:var(--danger);color:#1c0f0a}
   #mic.on .dot{background:#1c0f0a;opacity:1;animation:pulse 1s infinite}
@@ -62,21 +119,22 @@
   #clear .x{font-size:30px;line-height:1}
   #clear:active{background:#e08268}
 
-  #hint{position:fixed;left:0;right:0;bottom:96px;text-align:center;color:var(--dim);font-size:14px;pointer-events:none;opacity:0;transition:opacity .3s}
+  #hint{
+    position:fixed;left:0;right:0;bottom:96px;
+    text-align:center;color:var(--dim);font-size:14px;
+    pointer-events:none;opacity:0;transition:opacity .3s;
+  }
   #hint.show{opacity:1}
   @media (prefers-reduced-motion:reduce){#mic.on .dot{animation:none}}
 </style>
 </head>
 <body>
 
-  <div id="who">
-    <button class="spk me on" id="spkMe">🗣️ Yo</button>
-    <button class="spk her" id="spkHer">👵 Mamá</button>
+  <div id="stage">
+    <div id="message" class="placeholder" contenteditable="false" spellcheck="false"></div>
   </div>
 
-  <div id="stage" class="empty"><div id="ph">Toca quién va a hablar, luego el micrófono. Cada frase queda separada.</div></div>
-
-  <div id="row"></div>
+  <div id="phrases"></div>
 
   <div id="bar">
     <button class="btn small" id="minus" aria-label="Letra más chica">A−</button>
@@ -91,168 +149,176 @@
 <script>
 (function(){
   "use strict";
-  var stage=document.getElementById('stage'),
-      micBtn=document.getElementById('mic'),
-      micLabel=document.getElementById('micLabel'),
-      hint=document.getElementById('hint'),
-      row=document.getElementById('row'),
-      root=document.documentElement,
-      spkMe=document.getElementById('spkMe'),
-      spkHer=document.getElementById('spkHer');
 
-  var LABELS={me:"Yo", her:"Mamá"};
+  var msg      = document.getElementById('message');
+  var micBtn   = document.getElementById('mic');
+  var micLabel = document.getElementById('micLabel');
+  var hint     = document.getElementById('hint');
+  var root     = document.documentElement;
 
-  /* Tamaño de letra */
-  var sizes=[5,6,7.5,9.5,12,15], sizeIdx=2;
-  try{var s=localStorage.getItem('fs');if(s!==null)sizeIdx=Math.min(sizes.length-1,Math.max(0,parseInt(s,10)));}catch(e){}
-  function applySize(){root.style.setProperty('--fs',sizes[sizeIdx]+'vw');try{localStorage.setItem('fs',sizeIdx);}catch(e){}scrollDown();}
-  document.getElementById('plus').onclick=function(){if(sizeIdx<sizes.length-1){sizeIdx++;applySize();}};
-  document.getElementById('minus').onclick=function(){if(sizeIdx>0){sizeIdx--;applySize();}};
+  var sizes = [5,6.5,8,10,13,16];
+  var sizeIdx = 2;
+  try{ var s = localStorage.getItem('fs'); if(s!==null) sizeIdx = Math.min(sizes.length-1, Math.max(0, parseInt(s,10))); }catch(e){}
+  function applySize(){
+    root.style.setProperty('--fs', sizes[sizeIdx] + 'vw');
+    try{ localStorage.setItem('fs', sizeIdx); }catch(e){}
+    scrollDown();
+  }
+  document.getElementById('plus').onclick  = function(){ if(sizeIdx<sizes.length-1){sizeIdx++;applySize();} };
+  document.getElementById('minus').onclick = function(){ if(sizeIdx>0){sizeIdx--;applySize();} };
+  applySize();
 
-  /* Estado */
-  var messages=[];        // {who, text}
-  var activeIdx=-1;       // bloque que se está dictando/escribiendo
-  var interimText="";
-  var mode="idle";        // idle | voice | type
-  var current="me";
-
-  function cap(t){return t.replace(/(^|[.!?¿¡]\s+)([a-záéíóúñ])/g,function(m,a,b){return a+b.toUpperCase();});}
-  function scrollDown(){stage.scrollTop=stage.scrollHeight;}
+  var finalText = "";
+  var interimEl = null;
 
   function render(){
-    if(messages.length===0 && activeIdx<0){
-      stage.className="empty";
-      stage.innerHTML='<div id="ph">Toca quién va a hablar, luego el micrófono. Cada frase queda separada.</div>';
-      return;
+    if(finalText.trim()===""){
+      msg.classList.add('placeholder');
+      msg.innerHTML = "";
+    }else{
+      msg.classList.remove('placeholder');
+      msg.textContent = finalText;
     }
-    stage.className="";
-    stage.innerHTML="";
-    messages.forEach(function(m,i){
-      var d=document.createElement('div');
-      d.className='msg '+m.who;
-      var tag=document.createElement('div');tag.className='tag';tag.textContent=LABELS[m.who];
-      var tx=document.createElement('div');tx.className='txt';
-      if(i===activeIdx && mode==='type'){
-        tx.setAttribute('contenteditable','true');tx.setAttribute('spellcheck','false');
-        tx.textContent=m.text;
-        tx.addEventListener('input',function(){messages[i].text=tx.textContent;});
-        tx.id='editing';
-      }else{
-        tx.textContent=m.text;
-        if(i===activeIdx && interimText){
-          var sp=document.createElement('span');sp.className='interim';
-          sp.textContent=(m.text&&!/\s$/.test(m.text)?" ":"")+interimText;
-          tx.appendChild(sp);
-        }
-      }
-      d.appendChild(tag);d.appendChild(tx);stage.appendChild(d);
-    });
+    interimEl = null;
     scrollDown();
-    if(mode==='type'){var e=document.getElementById('editing');if(e){e.focus();
-      var r=document.createRange();r.selectNodeContents(e);r.collapse(false);
-      var sel=window.getSelection();sel.removeAllRanges();sel.addRange(r);}}
   }
-
-  function finalizeActive(){
-    if(activeIdx>=0){
-      messages[activeIdx].text=cap(messages[activeIdx].text.trim());
-      if(messages[activeIdx].text==="") messages.splice(activeIdx,1);
+  function showInterim(t){
+    msg.classList.remove('placeholder');
+    if(!interimEl){
+      msg.textContent = finalText;
+      interimEl = document.createElement('span');
+      interimEl.className = 'interim';
+      msg.appendChild(interimEl);
     }
-    activeIdx=-1;interimText="";mode="idle";
+    interimEl.textContent = (finalText && !/\s$/.test(finalText) ? " " : "") + t;
+    scrollDown();
   }
-  function newActiveBlock(){
-    finalizeActive();
-    messages.push({who:current,text:""});
-    activeIdx=messages.length-1;
+  function scrollDown(){
+    var st = document.getElementById('stage');
+    st.scrollTop = st.scrollHeight;
+  }
+  function commit(t){
+    t = t.trim();
+    if(!t) return;
+    if(finalText && !/\s$/.test(finalText)) finalText += " ";
+    finalText += t;
+    finalText = finalText.replace(/(^|[.!?¿¡]\s+)([a-záéíóúñ])/g, function(m,a,b){return a+b.toUpperCase();});
+    render();
   }
 
-  /* Quién habla */
-  function setSpeaker(w){
-    current=w;
-    spkMe.classList.toggle('on',w==='me');
-    spkHer.classList.toggle('on',w==='her');
-    micBtn.classList.toggle('her',w==='her' && !micBtn.classList.contains('on'));
-    // si hay un bloque activo vacío, cámbiale el hablante
-    if(activeIdx>=0 && messages[activeIdx].text==="" && !interimText){messages[activeIdx].who=w;render();}
-  }
-  spkMe.onclick=function(){setSpeaker('me');};
-  spkHer.onclick=function(){setSpeaker('her');};
-
-  /* Borrar */
-  document.getElementById('clear').onclick=function(){
-    if(mode!=='idle'){stopListening();}
-    messages=[];activeIdx=-1;interimText="";mode="idle";render();
+  document.getElementById('clear').onclick = function(){
+    finalText = "";
+    render();
+    if(editing) msg.focus();
   };
 
-  /* Escribir a mano */
-  document.getElementById('keyboard').onclick=function(){
-    if(mode==='type'){finalizeActive();render();return;}
-    stopListening();
-    mode='type';newActiveBlockForType();
-    flash("Escribe y toca ⌨️ para terminar.");
+  var editing = false;
+  document.getElementById('keyboard').onclick = function(){
+    editing = !editing;
+    msg.setAttribute('contenteditable', editing ? 'true' : 'false');
+    if(editing){
+      stopListening();
+      msg.classList.remove('placeholder');
+      msg.textContent = finalText;
+      msg.focus();
+      var r=document.createRange(); r.selectNodeContents(msg); r.collapse(false);
+      var sel=window.getSelection(); sel.removeAllRanges(); sel.addRange(r);
+      flash("Escribe con el teclado. Toca ⌨️ para terminar.");
+    }else{
+      finalText = msg.textContent;
+      render();
+    }
   };
-  function newActiveBlockForType(){
-    finalizeActive();mode='type';
-    messages.push({who:current,text:""});activeIdx=messages.length-1;render();
-  }
+  msg.addEventListener('input', function(){ if(editing) finalText = msg.textContent; });
 
-  /* Frases rápidas (se agregan como bloque del hablante actual) */
-  var phrases=["Te quiero mucho 💛","¿Cómo te sientes?","Es hora de tu medicina","¿Tienes hambre?","¿Quieres agua?","Ahorita vuelvo","Todo está bien","Descansa","¿Te duele algo?"];
+  var phrases = [
+    "Te quiero mucho 💛",
+    "¿Cómo te sientes?",
+    "Es hora de tu medicina",
+    "¿Tienes hambre?",
+    "Ahorita vuelvo",
+    "Todo está bien",
+    "¿Quieres agua?",
+    "Vamos al doctor",
+    "Descansa"
+  ];
+  var pc = document.getElementById('phrases');
   phrases.forEach(function(p){
-    var b=document.createElement('button');b.className='chip';b.textContent=p;
-    b.onclick=function(){finalizeActive();messages.push({who:current,text:p});render();};
-    row.appendChild(b);
+    var b=document.createElement('button');
+    b.className='chip'; b.textContent=p;
+    b.onclick=function(){
+      finalText = p;
+      editing=false; msg.setAttribute('contenteditable','false');
+      render();
+    };
+    pc.appendChild(b);
   });
 
-  /* Pantalla encendida */
   var wakeLock=null;
-  async function keepAwake(){try{if('wakeLock' in navigator){wakeLock=await navigator.wakeLock.request('screen');}}catch(e){}}
-  function releaseAwake(){try{if(wakeLock){wakeLock.release();wakeLock=null;}}catch(e){}}
-  document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible'&&mode==='voice')keepAwake();});
+  async function keepAwake(){
+    try{ if('wakeLock' in navigator){ wakeLock = await navigator.wakeLock.request('screen'); } }catch(e){}
+  }
+  function releaseAwake(){ try{ if(wakeLock){wakeLock.release();wakeLock=null;} }catch(e){} }
+  document.addEventListener('visibilitychange', function(){
+    if(document.visibilityState==='visible' && listening) keepAwake();
+  });
 
-  /* Voz */
-  var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-  var rec=null,listening=false,wantListen=false;
-  function flash(t){hint.textContent=t;hint.classList.add('show');clearTimeout(flash._t);flash._t=setTimeout(function(){hint.classList.remove('show');},3500);}
+  var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  var rec=null, listening=false, wantListen=false;
 
-  if(!SR){micBtn.disabled=true;micBtn.style.opacity=.5;micLabel.textContent="Sin voz";flash("Usa Chrome para dictar, o el teclado ⌨️.");}
-  else{
-    rec=new SR();rec.lang='es-MX';rec.continuous=true;rec.interimResults=true;
+  function flash(t){ hint.textContent=t; hint.classList.add('show'); clearTimeout(flash._t); flash._t=setTimeout(function(){hint.classList.remove('show');},3500); }
+
+  if(!SR){
+    micBtn.disabled=true; micBtn.style.opacity=.5;
+    micLabel.textContent="Sin voz";
+    flash("Este navegador no soporta dictado. Usa Chrome y el teclado ⌨️.");
+  }else{
+    rec = new SR();
+    rec.lang='es-MX';
+    rec.continuous=true;
+    rec.interimResults=true;
+
     rec.onresult=function(ev){
       var interim="";
       for(var i=ev.resultIndex;i<ev.results.length;i++){
         var r=ev.results[i];
-        if(r.isFinal){
-          if(activeIdx<0){messages.push({who:current,text:""});activeIdx=messages.length-1;}
-          var t=r[0].transcript.trim();
-          if(t){if(messages[activeIdx].text&&!/\s$/.test(messages[activeIdx].text))messages[activeIdx].text+=" ";messages[activeIdx].text+=t;}
-        }else interim+=r[0].transcript;
+        if(r.isFinal) commit(r[0].transcript);
+        else interim += r[0].transcript;
       }
-      interimText=interim;render();
+      if(interim) showInterim(interim);
     };
-    rec.onerror=function(ev){if(ev.error==='not-allowed'||ev.error==='service-not-allowed'){wantListen=false;setMicOn(false);flash("Permite el micrófono en el navegador.");}};
-    rec.onend=function(){listening=false;if(wantListen){try{rec.start();listening=true;}catch(e){}}else setMicOn(false);};
+    rec.onerror=function(ev){
+      if(ev.error==='not-allowed' || ev.error==='service-not-allowed'){
+        wantListen=false; setMic(false);
+        flash("Permite el micrófono en el navegador para poder dictar.");
+      }
+    };
+    rec.onend=function(){
+      listening=false;
+      if(wantListen){ try{ rec.start(); listening=true; }catch(e){} }
+      else setMic(false);
+    };
   }
-  function setMicOn(on){
-    if(on){micBtn.classList.add('on');micLabel.textContent="Escuchando…";}
-    else{micBtn.classList.remove('on');micLabel.textContent="Hablar";micBtn.classList.toggle('her',current==='her');}
+
+  function setMic(on){
+    if(on){ micBtn.classList.add('on'); micLabel.textContent="Escuchando…"; }
+    else  { micBtn.classList.remove('on'); micLabel.textContent="Hablar"; }
   }
   function startListening(){
-    if(!SR)return;
-    if(mode==='type')finalizeActive();
-    mode='voice';newActiveBlock();
+    if(!SR) return;
+    if(editing){ editing=false; msg.setAttribute('contenteditable','false'); finalText=msg.textContent; render(); }
     wantListen=true;
-    try{rec.start();listening=true;}catch(e){}
-    setMicOn(true);keepAwake();render();
+    try{ rec.start(); listening=true; setMic(true); keepAwake(); }
+    catch(e){ setMic(true); }
   }
   function stopListening(){
-    wantListen=false;try{rec.stop();}catch(e){}
-    if(mode==='voice')finalizeActive();
-    setMicOn(false);releaseAwake();render();
+    wantListen=false;
+    try{ rec.stop(); }catch(e){}
+    setMic(false); releaseAwake();
   }
-  micBtn.onclick=function(){if(!SR)return;if(mode==='voice'&&wantListen)stopListening();else startListening();};
+  micBtn.onclick=function(){ if(!SR) return; if(wantListen) stopListening(); else startListening(); };
 
-  setSpeaker('me');applySize();render();
+  render();
 })();
 </script>
 </body>
