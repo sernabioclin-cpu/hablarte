@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#17130f">
+<title>Hablarte</title>
+<style>
+  :root{
+    --bg:#17130f;--panel:#211a14;--ink:#faf3e7;--dim:#8a7d6c;
+    --me:#e0a24b;--me-soft:#2a2114;--me-line:#e0a24b;
+    --her:#7fb8a4;--her-soft:#1c2723;--her-line:#7fb8a4;
+    --danger:#c56b52;
+    --fs:7.5vw;--line:1.22;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0}
+  html,body{height:100%}
+  body{background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,system-ui,sans-serif;
+    display:flex;flex-direction:column;overflow:hidden;height:100dvh;-webkit-user-select:none;user-select:none}
+
+  /* Quién habla */
+  #who{display:flex;gap:8px;padding:10px 14px 6px}
+  .spk{flex:1;background:var(--panel);color:var(--dim);border:2px solid #2c2117;border-radius:16px;
+    padding:13px 8px;font-size:18px;font-weight:800;text-align:center}
+  .spk.me.on{color:#20160a;background:var(--me);border-color:var(--me)}
+  .spk.her.on{color:#0f1a16;background:var(--her);border-color:var(--her)}
+
+  /* Conversación */
+  #stage{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:8px 14px 8px}
+  #stage.empty{display:flex;align-items:center;justify-content:center}
+  #ph{color:var(--dim);font-size:5.2vw;font-weight:500;text-align:center;padding:0 10px}
+  .msg{margin:10px 0;padding:12px 16px 14px;border-radius:16px;border-left:8px solid}
+  .msg.me{background:var(--me-soft);border-left-color:var(--me-line)}
+  .msg.her{background:var(--her-soft);border-left-color:var(--her-line)}
+  .tag{font-size:13px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;margin-bottom:4px}
+  .msg.me .tag{color:var(--me)}
+  .msg.her .tag{color:var(--her)}
+  .txt{font-size:var(--fs);line-height:var(--line);font-weight:600;word-break:break-word;white-space:pre-wrap;outline:none}
+  .interim{color:var(--me);font-weight:600}
+  .msg.her .interim{color:var(--her)}
+
+  /* Frases rápidas */
+  #row{display:flex;gap:8px;padding:4px 14px 10px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  #row::-webkit-scrollbar{display:none}
+  .chip{flex:0 0 auto;background:var(--panel);color:var(--ink);border:1px solid #33281c;border-radius:999px;
+    padding:11px 16px;font-size:16px;font-weight:600;white-space:nowrap}
+  .chip:active{background:var(--me-soft);border-color:var(--me)}
+
+  /* Barra */
+  #bar{display:flex;align-items:center;gap:10px;padding:12px 16px calc(14px + env(safe-area-inset-bottom));background:var(--panel);border-top:1px solid #2c2117}
+  .btn{background:#2c2117;color:var(--ink);border:none;border-radius:16px;height:60px;min-width:58px;font-size:22px;font-weight:700;display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+  .btn:active{transform:scale(.95)}
+  .btn.small{font-size:26px}
+  #mic{flex:1;height:66px;background:var(--me);color:#20160a;font-size:20px;gap:10px;border-radius:20px}
+  #mic.her{background:var(--her);color:#0f1a16}
+  #mic .dot{width:14px;height:14px;border-radius:50%;background:#20160a;opacity:.35}
+  #mic.on{background:var(--danger);color:#1c0f0a}
+  #mic.on .dot{background:#1c0f0a;opacity:1;animation:pulse 1s infinite}
+  @keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.5);opacity:.4}}
+  #clear{background:var(--danger);color:#20160a;font-weight:800;font-size:18px;height:66px;min-width:104px;border-radius:18px;gap:7px;padding:0 16px}
+  #clear .x{font-size:30px;line-height:1}
+  #clear:active{background:#e08268}
+
+  #hint{position:fixed;left:0;right:0;bottom:96px;text-align:center;color:var(--dim);font-size:14px;pointer-events:none;opacity:0;transition:opacity .3s}
+  #hint.show{opacity:1}
+  @media (prefers-reduced-motion:reduce){#mic.on .dot{animation:none}}
+</style>
+</head>
+<body>
+
+  <div id="who">
+    <button class="spk me on" id="spkMe">🗣️ Yo</button>
+    <button class="spk her" id="spkHer">👵 Mamá</button>
+  </div>
+
+  <div id="stage" class="empty"><div id="ph">Toca quién va a hablar, luego el micrófono. Cada frase queda separada.</div></div>
+
+  <div id="row"></div>
+
+  <div id="bar">
+    <button class="btn small" id="minus" aria-label="Letra más chica">A−</button>
+    <button class="btn small" id="plus" aria-label="Letra más grande">A+</button>
+    <button id="mic" aria-label="Hablar"><span class="dot"></span><span id="micLabel">Hablar</span></button>
+    <button class="btn" id="keyboard" aria-label="Escribir a mano">⌨️</button>
+    <button class="btn" id="clear" aria-label="Borrar"><span class="x">✕</span>Borrar</button>
+  </div>
+
+  <div id="hint"></div>
+
+<script>
+(function(){
+  "use strict";
+  var stage=document.getElementById('stage'),
+      micBtn=document.getElementById('mic'),
+      micLabel=document.getElementById('micLabel'),
+      hint=document.getElementById('hint'),
+      row=document.getElementById('row'),
+      root=document.documentElement,
+      spkMe=document.getElementById('spkMe'),
+      spkHer=document.getElementById('spkHer');
+
+  var LABELS={me:"Yo", her:"Mamá"};
+
+  /* Tamaño de letra */
+  var sizes=[5,6,7.5,9.5,12,15], sizeIdx=2;
+  try{var s=localStorage.getItem('fs');if(s!==null)sizeIdx=Math.min(sizes.length-1,Math.max(0,parseInt(s,10)));}catch(e){}
+  function applySize(){root.style.setProperty('--fs',sizes[sizeIdx]+'vw');try{localStorage.setItem('fs',sizeIdx);}catch(e){}scrollDown();}
+  document.getElementById('plus').onclick=function(){if(sizeIdx<sizes.length-1){sizeIdx++;applySize();}};
+  document.getElementById('minus').onclick=function(){if(sizeIdx>0){sizeIdx--;applySize();}};
+
+  /* Estado */
+  var messages=[];        // {who, text}
+  var activeIdx=-1;       // bloque que se está dictando/escribiendo
+  var interimText="";
+  var mode="idle";        // idle | voice | type
+  var current="me";
+
+  function cap(t){return t.replace(/(^|[.!?¿¡]\s+)([a-záéíóúñ])/g,function(m,a,b){return a+b.toUpperCase();});}
+  function scrollDown(){stage.scrollTop=stage.scrollHeight;}
+
+  function render(){
+    if(messages.length===0 && activeIdx<0){
+      stage.className="empty";
+      stage.innerHTML='<div id="ph">Toca quién va a hablar, luego el micrófono. Cada frase queda separada.</div>';
+      return;
+    }
+    stage.className="";
+    stage.innerHTML="";
+    messages.forEach(function(m,i){
+      var d=document.createElement('div');
+      d.className='msg '+m.who;
+      var tag=document.createElement('div');tag.className='tag';tag.textContent=LABELS[m.who];
+      var tx=document.createElement('div');tx.className='txt';
+      if(i===activeIdx && mode==='type'){
+        tx.setAttribute('contenteditable','true');tx.setAttribute('spellcheck','false');
+        tx.textContent=m.text;
+        tx.addEventListener('input',function(){messages[i].text=tx.textContent;});
+        tx.id='editing';
+      }else{
+        tx.textContent=m.text;
+        if(i===activeIdx && interimText){
+          var sp=document.createElement('span');sp.className='interim';
+          sp.textContent=(m.text&&!/\s$/.test(m.text)?" ":"")+interimText;
+          tx.appendChild(sp);
+        }
+      }
+      d.appendChild(tag);d.appendChild(tx);stage.appendChild(d);
+    });
+    scrollDown();
+    if(mode==='type'){var e=document.getElementById('editing');if(e){e.focus();
+      var r=document.createRange();r.selectNodeContents(e);r.collapse(false);
+      var sel=window.getSelection();sel.removeAllRanges();sel.addRange(r);}}
+  }
+
+  function finalizeActive(){
+    if(activeIdx>=0){
+      messages[activeIdx].text=cap(messages[activeIdx].text.trim());
+      if(messages[activeIdx].text==="") messages.splice(activeIdx,1);
+    }
+    activeIdx=-1;interimText="";mode="idle";
+  }
+  function newActiveBlock(){
+    finalizeActive();
+    messages.push({who:current,text:""});
+    activeIdx=messages.length-1;
+  }
+
+  /* Quién habla */
+  function setSpeaker(w){
+    current=w;
+    spkMe.classList.toggle('on',w==='me');
+    spkHer.classList.toggle('on',w==='her');
+    micBtn.classList.toggle('her',w==='her' && !micBtn.classList.contains('on'));
+    // si hay un bloque activo vacío, cámbiale el hablante
+    if(activeIdx>=0 && messages[activeIdx].text==="" && !interimText){messages[activeIdx].who=w;render();}
+  }
+  spkMe.onclick=function(){setSpeaker('me');};
+  spkHer.onclick=function(){setSpeaker('her');};
+
+  /* Borrar */
+  document.getElementById('clear').onclick=function(){
+    if(mode!=='idle'){stopListening();}
+    messages=[];activeIdx=-1;interimText="";mode="idle";render();
+  };
+
+  /* Escribir a mano */
+  document.getElementById('keyboard').onclick=function(){
+    if(mode==='type'){finalizeActive();render();return;}
+    stopListening();
+    mode='type';newActiveBlockForType();
+    flash("Escribe y toca ⌨️ para terminar.");
+  };
+  function newActiveBlockForType(){
+    finalizeActive();mode='type';
+    messages.push({who:current,text:""});activeIdx=messages.length-1;render();
+  }
+
+  /* Frases rápidas (se agregan como bloque del hablante actual) */
+  var phrases=["Te quiero mucho 💛","¿Cómo te sientes?","Es hora de tu medicina","¿Tienes hambre?","¿Quieres agua?","Ahorita vuelvo","Todo está bien","Descansa","¿Te duele algo?"];
+  phrases.forEach(function(p){
+    var b=document.createElement('button');b.className='chip';b.textContent=p;
+    b.onclick=function(){finalizeActive();messages.push({who:current,text:p});render();};
+    row.appendChild(b);
+  });
+
+  /* Pantalla encendida */
+  var wakeLock=null;
+  async function keepAwake(){try{if('wakeLock' in navigator){wakeLock=await navigator.wakeLock.request('screen');}}catch(e){}}
+  function releaseAwake(){try{if(wakeLock){wakeLock.release();wakeLock=null;}}catch(e){}}
+  document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible'&&mode==='voice')keepAwake();});
+
+  /* Voz */
+  var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  var rec=null,listening=false,wantListen=false;
+  function flash(t){hint.textContent=t;hint.classList.add('show');clearTimeout(flash._t);flash._t=setTimeout(function(){hint.classList.remove('show');},3500);}
+
+  if(!SR){micBtn.disabled=true;micBtn.style.opacity=.5;micLabel.textContent="Sin voz";flash("Usa Chrome para dictar, o el teclado ⌨️.");}
+  else{
+    rec=new SR();rec.lang='es-MX';rec.continuous=true;rec.interimResults=true;
+    rec.onresult=function(ev){
+      var interim="";
+      for(var i=ev.resultIndex;i<ev.results.length;i++){
+        var r=ev.results[i];
+        if(r.isFinal){
+          if(activeIdx<0){messages.push({who:current,text:""});activeIdx=messages.length-1;}
+          var t=r[0].transcript.trim();
+          if(t){if(messages[activeIdx].text&&!/\s$/.test(messages[activeIdx].text))messages[activeIdx].text+=" ";messages[activeIdx].text+=t;}
+        }else interim+=r[0].transcript;
+      }
+      interimText=interim;render();
+    };
+    rec.onerror=function(ev){if(ev.error==='not-allowed'||ev.error==='service-not-allowed'){wantListen=false;setMicOn(false);flash("Permite el micrófono en el navegador.");}};
+    rec.onend=function(){listening=false;if(wantListen){try{rec.start();listening=true;}catch(e){}}else setMicOn(false);};
+  }
+  function setMicOn(on){
+    if(on){micBtn.classList.add('on');micLabel.textContent="Escuchando…";}
+    else{micBtn.classList.remove('on');micLabel.textContent="Hablar";micBtn.classList.toggle('her',current==='her');}
+  }
+  function startListening(){
+    if(!SR)return;
+    if(mode==='type')finalizeActive();
+    mode='voice';newActiveBlock();
+    wantListen=true;
+    try{rec.start();listening=true;}catch(e){}
+    setMicOn(true);keepAwake();render();
+  }
+  function stopListening(){
+    wantListen=false;try{rec.stop();}catch(e){}
+    if(mode==='voice')finalizeActive();
+    setMicOn(false);releaseAwake();render();
+  }
+  micBtn.onclick=function(){if(!SR)return;if(mode==='voice'&&wantListen)stopListening();else startListening();};
+
+  setSpeaker('me');applySize();render();
+})();
+</script>
+</body>
+</html>
