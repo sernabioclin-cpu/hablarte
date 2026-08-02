@@ -6,111 +6,23 @@
 <meta name="theme-color" content="#17130f">
 <title>Hablarte</title>
 <style>
-  :root{
-    --bg:#17130f;
-    --panel:#211a14;
-    --ink:#faf3e7;
-    --dim:#8a7d6c;
-    --accent:#e0a24b;
-    --accent-soft:#3a2c19;
-    --danger:#c56b52;
-    --fs:8vw;
-    --line:1.25;
-  }
+  :root{--bg:#17130f;--panel:#211a14;--ink:#faf3e7;--dim:#8a7d6c;--accent:#e0a24b;--accent-soft:#3a2c19;--danger:#c56b52;--fs:8vw;--line:1.25}
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0}
   html,body{height:100%}
-  body{
-    background:var(--bg);
-    color:var(--ink);
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,system-ui,sans-serif;
-    display:flex;flex-direction:column;
-    overflow:hidden;
-    height:100dvh;
-    -webkit-user-select:none;user-select:none;
-  }
-
-  #stage{
-    flex:1;
-    display:flex;
-    padding:24px 22px 8px;
-    overflow-y:auto;
-    -webkit-overflow-scrolling:touch;
-  }
-  #message{
-    width:100%;
-    align-self:center;
-    font-size:var(--fs);
-    line-height:var(--line);
-    font-weight:600;
-    letter-spacing:.005em;
-    word-break:break-word;
-    color:var(--ink);
-    background:transparent;
-    border:none;
-    outline:none;
-    resize:none;
-    overflow:visible;
-    caret-color:var(--accent);
-  }
-  #message:empty::before,
-  #message.placeholder::before{
-    content:"Toca el micrófono y háblale a tu mamá…";
-    color:var(--dim);
-    font-weight:500;
-    font-size:5.5vw;
-  }
+  body{background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,system-ui,sans-serif;display:flex;flex-direction:column;overflow:hidden;height:100dvh;-webkit-user-select:none;user-select:none}
+  #stage{flex:1;display:flex;padding:24px 22px 8px;overflow-y:auto;-webkit-overflow-scrolling:touch}
+  #message{width:100%;align-self:center;font-size:var(--fs);line-height:var(--line);font-weight:600;letter-spacing:.005em;word-break:break-word;color:var(--ink);background:transparent;border:none;outline:none;resize:none;overflow:visible;caret-color:var(--accent)}
+  #message:empty::before,#message.placeholder::before{content:"Toca el micrófono y háblale a tu mamá…";color:var(--dim);font-weight:500;font-size:5.5vw}
   .interim{color:var(--accent);font-weight:600}
-
-  #phrases{
-    display:flex;gap:8px;
-    padding:6px 14px 10px;
-    overflow-x:auto;
-    -webkit-overflow-scrolling:touch;
-    scrollbar-width:none;
-  }
+  #phrases{display:flex;gap:8px;padding:6px 14px 10px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
   #phrases::-webkit-scrollbar{display:none}
-  .chip{
-    flex:0 0 auto;
-    background:var(--panel);
-    color:var(--ink);
-    border:1px solid #33281c;
-    border-radius:999px;
-    padding:11px 16px;
-    font-size:16px;
-    font-weight:600;
-    white-space:nowrap;
-  }
+  .chip{flex:0 0 auto;background:var(--panel);color:var(--ink);border:1px solid #33281c;border-radius:999px;padding:11px 16px;font-size:16px;font-weight:600;white-space:nowrap}
   .chip:active{background:var(--accent-soft);border-color:var(--accent)}
-
-  #bar{
-    display:flex;align-items:center;gap:10px;
-    padding:12px 16px calc(14px + env(safe-area-inset-bottom));
-    background:var(--panel);
-    border-top:1px solid #2c2117;
-  }
-  .btn{
-    background:#2c2117;
-    color:var(--ink);
-    border:none;
-    border-radius:16px;
-    height:58px;
-    min-width:58px;
-    font-size:22px;
-    font-weight:700;
-    display:flex;align-items:center;justify-content:center;
-    flex:0 0 auto;
-  }
+  #bar{display:flex;align-items:center;gap:10px;padding:12px 16px calc(14px + env(safe-area-inset-bottom));background:var(--panel);border-top:1px solid #2c2117}
+  .btn{background:#2c2117;color:var(--ink);border:none;border-radius:16px;height:58px;min-width:58px;font-size:22px;font-weight:700;display:flex;align-items:center;justify-content:center;flex:0 0 auto}
   .btn:active{transform:scale(.95)}
   .btn.small{font-size:26px}
-  #mic{
-    flex:1;
-    height:66px;
-    background:var(--accent);
-    color:#20160a;
-    font-size:20px;
-    gap:10px;
-    border-radius:20px;
-  }
+  #mic{flex:1;height:66px;background:var(--accent);color:#20160a;font-size:20px;gap:10px;border-radius:20px}
   #mic .dot{width:14px;height:14px;border-radius:50%;background:#20160a;opacity:.35}
   #mic.on{background:var(--danger);color:#1c0f0a}
   #mic.on .dot{background:#1c0f0a;opacity:1;animation:pulse 1s infinite}
@@ -118,24 +30,14 @@
   #clear{background:var(--danger);color:#20160a;font-weight:800;font-size:18px;height:66px;min-width:104px;border-radius:18px;gap:7px;padding:0 16px}
   #clear .x{font-size:30px;line-height:1}
   #clear:active{background:#e08268}
-
-  #hint{
-    position:fixed;left:0;right:0;bottom:96px;
-    text-align:center;color:var(--dim);font-size:14px;
-    pointer-events:none;opacity:0;transition:opacity .3s;
-  }
+  #hint{position:fixed;left:0;right:0;bottom:96px;text-align:center;color:var(--dim);font-size:14px;pointer-events:none;opacity:0;transition:opacity .3s}
   #hint.show{opacity:1}
   @media (prefers-reduced-motion:reduce){#mic.on .dot{animation:none}}
 </style>
 </head>
 <body>
-
-  <div id="stage">
-    <div id="message" class="placeholder" contenteditable="false" spellcheck="false"></div>
-  </div>
-
+  <div id="stage"><div id="message" class="placeholder" contenteditable="false" spellcheck="false"></div></div>
   <div id="phrases"></div>
-
   <div id="bar">
     <button class="btn small" id="minus" aria-label="Letra más chica">A−</button>
     <button class="btn small" id="plus" aria-label="Letra más grande">A+</button>
@@ -143,180 +45,83 @@
     <button class="btn" id="keyboard" aria-label="Escribir a mano">⌨️</button>
     <button class="btn" id="clear" aria-label="Borrar"><span class="x">✕</span>Borrar</button>
   </div>
-
   <div id="hint"></div>
-
 <script>
 (function(){
   "use strict";
+  var msg=document.getElementById('message'),micBtn=document.getElementById('mic'),micLabel=document.getElementById('micLabel'),hint=document.getElementById('hint'),root=document.documentElement;
 
-  var msg      = document.getElementById('message');
-  var micBtn   = document.getElementById('mic');
-  var micLabel = document.getElementById('micLabel');
-  var hint     = document.getElementById('hint');
-  var root     = document.documentElement;
-
-  var sizes = [5,6.5,8,10,13,16];
-  var sizeIdx = 2;
-  try{ var s = localStorage.getItem('fs'); if(s!==null) sizeIdx = Math.min(sizes.length-1, Math.max(0, parseInt(s,10))); }catch(e){}
-  function applySize(){
-    root.style.setProperty('--fs', sizes[sizeIdx] + 'vw');
-    try{ localStorage.setItem('fs', sizeIdx); }catch(e){}
-    scrollDown();
-  }
-  document.getElementById('plus').onclick  = function(){ if(sizeIdx<sizes.length-1){sizeIdx++;applySize();} };
-  document.getElementById('minus').onclick = function(){ if(sizeIdx>0){sizeIdx--;applySize();} };
+  var sizes=[5,6.5,8,10,13,16],sizeIdx=2;
+  try{var s=localStorage.getItem('fs');if(s!==null)sizeIdx=Math.min(sizes.length-1,Math.max(0,parseInt(s,10)));}catch(e){}
+  function applySize(){root.style.setProperty('--fs',sizes[sizeIdx]+'vw');try{localStorage.setItem('fs',sizeIdx);}catch(e){}scrollDown();}
+  document.getElementById('plus').onclick=function(){if(sizeIdx<sizes.length-1){sizeIdx++;applySize();}};
+  document.getElementById('minus').onclick=function(){if(sizeIdx>0){sizeIdx--;applySize();}};
   applySize();
 
-  var finalText = "";
-  var interimEl = null;
-
+  var committed="", session="", editing=false;
+  function cap(t){return t.replace(/(^|[.!?¿¡]\s+)([a-záéíóúñ])/g,function(m,a,b){return a+b.toUpperCase();});}
+  function scrollDown(){var st=document.getElementById('stage');st.scrollTop=st.scrollHeight;}
   function render(){
-    if(finalText.trim()===""){
-      msg.classList.add('placeholder');
-      msg.innerHTML = "";
-    }else{
-      msg.classList.remove('placeholder');
-      msg.textContent = finalText;
-    }
-    interimEl = null;
-    scrollDown();
-  }
-  function showInterim(t){
+    if(committed.trim()==="" && session.trim()===""){msg.classList.add('placeholder');msg.innerHTML="";return;}
     msg.classList.remove('placeholder');
-    if(!interimEl){
-      msg.textContent = finalText;
-      interimEl = document.createElement('span');
-      interimEl.className = 'interim';
-      msg.appendChild(interimEl);
-    }
-    interimEl.textContent = (finalText && !/\s$/.test(finalText) ? " " : "") + t;
+    msg.textContent=committed;
+    if(session){var sp=document.createElement('span');sp.className='interim';sp.textContent=(committed&&!/\s$/.test(committed)?" ":"")+session;msg.appendChild(sp);}
     scrollDown();
   }
-  function scrollDown(){
-    var st = document.getElementById('stage');
-    st.scrollTop = st.scrollHeight;
-  }
-  function commit(t){
-    t = t.trim();
-    if(!t) return;
-    if(finalText && !/\s$/.test(finalText)) finalText += " ";
-    finalText += t;
-    finalText = finalText.replace(/(^|[.!?¿¡]\s+)([a-záéíóúñ])/g, function(m,a,b){return a+b.toUpperCase();});
-    render();
-  }
 
-  document.getElementById('clear').onclick = function(){
-    finalText = "";
-    render();
-    if(editing) msg.focus();
-  };
+  document.getElementById('clear').onclick=function(){committed="";session="";render();if(editing)msg.focus();};
 
-  var editing = false;
-  document.getElementById('keyboard').onclick = function(){
-    editing = !editing;
-    msg.setAttribute('contenteditable', editing ? 'true' : 'false');
+  document.getElementById('keyboard').onclick=function(){
+    editing=!editing;msg.setAttribute('contenteditable',editing?'true':'false');
     if(editing){
-      stopListening();
-      msg.classList.remove('placeholder');
-      msg.textContent = finalText;
-      msg.focus();
-      var r=document.createRange(); r.selectNodeContents(msg); r.collapse(false);
-      var sel=window.getSelection(); sel.removeAllRanges(); sel.addRange(r);
+      stopListening();msg.classList.remove('placeholder');msg.textContent=committed;msg.focus();
+      var r=document.createRange();r.selectNodeContents(msg);r.collapse(false);var sel=window.getSelection();sel.removeAllRanges();sel.addRange(r);
       flash("Escribe con el teclado. Toca ⌨️ para terminar.");
-    }else{
-      finalText = msg.textContent;
-      render();
-    }
+    }else{committed=msg.textContent;session="";render();}
   };
-  msg.addEventListener('input', function(){ if(editing) finalText = msg.textContent; });
+  msg.addEventListener('input',function(){if(editing)committed=msg.textContent;});
 
-  var phrases = [
-    "Te quiero mucho 💛",
-    "¿Cómo te sientes?",
-    "Es hora de tu medicina",
-    "¿Tienes hambre?",
-    "Ahorita vuelvo",
-    "Todo está bien",
-    "¿Quieres agua?",
-    "Vamos al doctor",
-    "Descansa"
-  ];
-  var pc = document.getElementById('phrases');
-  phrases.forEach(function(p){
-    var b=document.createElement('button');
-    b.className='chip'; b.textContent=p;
-    b.onclick=function(){
-      finalText = p;
-      editing=false; msg.setAttribute('contenteditable','false');
-      render();
-    };
-    pc.appendChild(b);
-  });
+  var phrases=["Te quiero mucho 💛","¿Cómo te sientes?","Es hora de tu medicina","¿Tienes hambre?","Ahorita vuelvo","Todo está bien","¿Quieres agua?","Vamos al doctor","Descansa"];
+  var pc=document.getElementById('phrases');
+  phrases.forEach(function(p){var b=document.createElement('button');b.className='chip';b.textContent=p;b.onclick=function(){committed=p;session="";editing=false;msg.setAttribute('contenteditable','false');render();};pc.appendChild(b);});
 
   var wakeLock=null;
-  async function keepAwake(){
-    try{ if('wakeLock' in navigator){ wakeLock = await navigator.wakeLock.request('screen'); } }catch(e){}
-  }
-  function releaseAwake(){ try{ if(wakeLock){wakeLock.release();wakeLock=null;} }catch(e){} }
-  document.addEventListener('visibilitychange', function(){
-    if(document.visibilityState==='visible' && listening) keepAwake();
-  });
+  async function keepAwake(){try{if('wakeLock' in navigator){wakeLock=await navigator.wakeLock.request('screen');}}catch(e){}}
+  function releaseAwake(){try{if(wakeLock){wakeLock.release();wakeLock=null;}}catch(e){}}
+  document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible'&&listening)keepAwake();});
 
-  var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  var rec=null, listening=false, wantListen=false;
+  var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  var rec=null,listening=false,wantListen=false;
+  function flash(t){hint.textContent=t;hint.classList.add('show');clearTimeout(flash._t);flash._t=setTimeout(function(){hint.classList.remove('show');},3500);}
 
-  function flash(t){ hint.textContent=t; hint.classList.add('show'); clearTimeout(flash._t); flash._t=setTimeout(function(){hint.classList.remove('show');},3500); }
-
-  if(!SR){
-    micBtn.disabled=true; micBtn.style.opacity=.5;
-    micLabel.textContent="Sin voz";
-    flash("Este navegador no soporta dictado. Usa Chrome y el teclado ⌨️.");
-  }else{
-    rec = new SR();
-    rec.lang='es-MX';
-    rec.continuous=true;
-    rec.interimResults=true;
-
+  if(!SR){micBtn.disabled=true;micBtn.style.opacity=.5;micLabel.textContent="Sin voz";flash("Este navegador no soporta dictado. Usa Chrome y el teclado ⌨️.");}
+  else{
+    rec=new SR();rec.lang='es-MX';rec.continuous=true;rec.interimResults=true;
+    // Se reconstruye TODO el texto de la sesión en cada evento (sin volver a pegar => sin repeticiones en Android)
     rec.onresult=function(ev){
-      var interim="";
-      for(var i=ev.resultIndex;i<ev.results.length;i++){
-        var r=ev.results[i];
-        if(r.isFinal) commit(r[0].transcript);
-        else interim += r[0].transcript;
-      }
-      if(interim) showInterim(interim);
+      var s="";
+      for(var i=0;i<ev.results.length;i++){ s += ev.results[i][0].transcript; if(ev.results[i].isFinal) s+=" "; }
+      session=s;render();
     };
-    rec.onerror=function(ev){
-      if(ev.error==='not-allowed' || ev.error==='service-not-allowed'){
-        wantListen=false; setMic(false);
-        flash("Permite el micrófono en el navegador para poder dictar.");
-      }
-    };
+    rec.onerror=function(ev){if(ev.error==='not-allowed'||ev.error==='service-not-allowed'){wantListen=false;setMic(false);flash("Permite el micrófono en el navegador para poder dictar.");}};
     rec.onend=function(){
       listening=false;
-      if(wantListen){ try{ rec.start(); listening=true; }catch(e){} }
+      if(session.trim()){committed=cap((committed?committed+" ":"")+session.trim());session="";}
+      if(wantListen){try{rec.start();listening=true;}catch(e){}}
       else setMic(false);
+      render();
     };
   }
-
-  function setMic(on){
-    if(on){ micBtn.classList.add('on'); micLabel.textContent="Escuchando…"; }
-    else  { micBtn.classList.remove('on'); micLabel.textContent="Hablar"; }
-  }
+  function setMic(on){if(on){micBtn.classList.add('on');micLabel.textContent="Escuchando…";}else{micBtn.classList.remove('on');micLabel.textContent="Hablar";}}
   function startListening(){
-    if(!SR) return;
-    if(editing){ editing=false; msg.setAttribute('contenteditable','false'); finalText=msg.textContent; render(); }
-    wantListen=true;
-    try{ rec.start(); listening=true; setMic(true); keepAwake(); }
-    catch(e){ setMic(true); }
+    if(!SR)return;
+    if(editing){editing=false;msg.setAttribute('contenteditable','false');committed=msg.textContent;}
+    session="";wantListen=true;
+    try{rec.start();listening=true;}catch(e){}
+    setMic(true);keepAwake();render();
   }
-  function stopListening(){
-    wantListen=false;
-    try{ rec.stop(); }catch(e){}
-    setMic(false); releaseAwake();
-  }
-  micBtn.onclick=function(){ if(!SR) return; if(wantListen) stopListening(); else startListening(); };
+  function stopListening(){wantListen=false;try{rec.stop();}catch(e){}setMic(false);releaseAwake();}
+  micBtn.onclick=function(){if(!SR)return;if(wantListen)stopListening();else startListening();};
 
   render();
 })();
